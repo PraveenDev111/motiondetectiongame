@@ -1,4 +1,4 @@
-// Main JavaScript for Rock Paper Scissors Game
+// Main JavaScript for Rock Paper Scissors Lizard Spock Game
 
 document.addEventListener('DOMContentLoaded', function() {
     // Get DOM elements
@@ -6,36 +6,93 @@ document.addEventListener('DOMContentLoaded', function() {
     const userGesture = document.getElementById('userGesture');
     const computerGesture = document.getElementById('computerGesture');
     const gameResult = document.getElementById('gameResult');
+    const userGestureIcon = document.getElementById('userGestureIcon');
+    const computerGestureIcon = document.getElementById('computerGestureIcon');
+    const classicModeBtn = document.getElementById('classicModeBtn');
+    const extendedModeBtn = document.getElementById('extendedModeBtn');
+    const classicRules = document.getElementById('classicRules');
+    const extendedRules = document.getElementById('extendedRules');
+    const lizardGuide = document.getElementById('lizardGuide');
+    const spockGuide = document.getElementById('spockGuide');
+    
+    // Game state
+    let gameMode = 'extended'; // 'classic' or 'extended'
     
     // Function to capitalize first letter
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
     
+    // Gesture icons mapping
+    const gestureIcons = {
+        'rock': '<i class="fas fa-hand-rock"></i>',
+        'paper': '<i class="fas fa-hand-paper"></i>',
+        'scissors': '<i class="fas fa-hand-scissors"></i>',
+        'lizard': '<i class="fas fa-hand-lizard"></i>',
+        'spock': '<i class="fas fa-hand-spock"></i>',
+        'unknown': '<i class="fas fa-question-circle"></i>'
+    };
+    
     // Function to update the UI with game results
     function updateGameUI(result) {
         // Update user gesture
-        userGesture.textContent = result.user_gesture === 'unknown' 
+        const userGestureText = result.user_gesture === 'unknown' 
             ? 'Not detected' 
             : capitalizeFirstLetter(result.user_gesture);
+        userGesture.textContent = userGestureText;
         
         // Update computer gesture
         computerGesture.textContent = capitalizeFirstLetter(result.computer_gesture);
+        
+        // Update gesture icons
+        userGestureIcon.innerHTML = gestureIcons[result.user_gesture] || gestureIcons.unknown;
+        computerGestureIcon.innerHTML = gestureIcons[result.computer_gesture] || gestureIcons.unknown;
+        
+        // Add animation class
+        userGestureIcon.classList.add('animate-pulse');
+        computerGestureIcon.classList.add('animate-pulse');
+        
+        // Remove animation after a delay
+        setTimeout(() => {
+            userGestureIcon.classList.remove('animate-pulse');
+            computerGestureIcon.classList.remove('animate-pulse');
+        }, 1000);
         
         // Update game result
         gameResult.textContent = result.result;
         
         // Change background color based on result
-        if (result.result.includes('win')) {
-            gameResult.parentElement.style.backgroundColor = '#27ae60'; // Green for win
+        if (result.result.includes('You win')) {
+            gameResult.parentElement.style.backgroundColor = 'var(--success-color)'; // Green for win
         } else if (result.result.includes('Computer wins')) {
-            gameResult.parentElement.style.backgroundColor = '#e74c3c'; // Red for loss
+            gameResult.parentElement.style.backgroundColor = 'var(--secondary-color)'; // Red for loss
         } else if (result.result.includes('Tie')) {
-            gameResult.parentElement.style.backgroundColor = '#f39c12'; // Orange for tie
+            gameResult.parentElement.style.backgroundColor = 'var(--warning-color)'; // Orange for tie
         } else {
             // Error or other cases
             gameResult.parentElement.style.backgroundColor = '#7f8c8d'; // Gray for error
         }
+    }
+    
+    // We're only using extended mode now
+    gameMode = 'extended';
+    
+    // Hide classic mode UI elements
+    if (classicModeBtn && extendedModeBtn) {
+        classicModeBtn.style.display = 'none';
+        extendedModeBtn.style.display = 'none';
+    }
+    
+    // Show only extended rules
+    if (classicRules && extendedRules) {
+        classicRules.style.display = 'none';
+        extendedRules.style.display = 'block';
+    }
+    
+    // Show all gesture guides
+    if (lizardGuide && spockGuide) {
+        lizardGuide.style.display = 'block';
+        spockGuide.style.display = 'block';
     }
     
     // Event listener for capture button
@@ -43,10 +100,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Change button text and disable temporarily
         captureBtn.textContent = 'Processing...';
         captureBtn.disabled = true;
+        captureBtn.classList.add('animate-pulse');
         
         // Visual countdown
         let count = 3;
         gameResult.textContent = `Capturing in ${count}...`;
+        gameResult.parentElement.style.backgroundColor = 'var(--primary-color)';
         
         const countdownInterval = setInterval(() => {
             count--;
@@ -66,25 +125,42 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .then(data => {
                         console.log('Capture response:', data);
+                        
+                        // Make sure we have valid gesture data
+                        if (!data || !data.computer_gesture) {
+                            data = {
+                                user_gesture: 'unknown',
+                                computer_gesture: 'rock',
+                                result: 'Error: Could not detect gesture. Try again.'
+                            };
+                        }
+                        
+                        // If computer gesture is undefined, set a default
+                        if (data.computer_gesture === 'unknown') {
+                            data.computer_gesture = 'rock';
+                        }
+                        
                         // Update the UI with the results
                         updateGameUI(data);
                         
                         // Re-enable the button
                         captureBtn.textContent = 'Capture Gesture';
                         captureBtn.disabled = false;
+                        captureBtn.classList.remove('animate-pulse');
                     })
                     .catch(error => {
                         console.error('Error capturing gesture:', error);
                         // Update UI with error
                         updateGameUI({
                             user_gesture: 'unknown',
-                            computer_gesture: 'unknown',
+                            computer_gesture: 'rock',
                             result: 'Error: Could not capture gesture. Try again.'
                         });
                         
                         // Re-enable the button
                         captureBtn.textContent = 'Capture Gesture';
                         captureBtn.disabled = false;
+                        captureBtn.classList.remove('animate-pulse');
                     });
             }
         }, 1000);
@@ -97,17 +173,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Function to create animations for the gestures
-    function createGestureAnimations() {
-        const gestures = document.querySelectorAll('.gesture-display');
-        
-        gestures.forEach(gesture => {
-            gesture.addEventListener('transitionend', () => {
-                gesture.classList.remove('animate');
-            });
-        });
-    }
-    
-    // Initialize gesture animations
-    createGestureAnimations();
+    // Add hover effects to gesture examples
+    const gestureExamples = document.querySelectorAll('.gesture-example');
+    gestureExamples.forEach(example => {
+        const gestureName = example.querySelector('.gesture-name').textContent.toLowerCase();
+        if (gestureIcons[gestureName]) {
+            const iconElement = document.createElement('div');
+            iconElement.className = 'gesture-icon-example';
+            iconElement.innerHTML = gestureIcons[gestureName];
+            example.appendChild(iconElement);
+        }
+    });
 });
