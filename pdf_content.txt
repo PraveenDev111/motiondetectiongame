@@ -1,0 +1,136 @@
+
+
+--- PAGE 1 ---
+
+ 
+CS402.3  Coursework 20 25/2026 1 
+ 
+ 
+ 
+Computer Graphics and 
+Visualization  
+CS402.3  
+ 
+ 
+Coursework  
+2025-2026 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Submission Deadline:  TBA 
+Coursework Type:  Group Assignment  
+Module Leader : Dr. Rasika Ranaweera  
+E-mail: ranaweera.r@nsbm. ac.lk 
+  
+
+--- PAGE 2 ---
+
+ 
+CS402.3  Coursework 20 25/2026 2 Coursework  
+ 
+This coursework for CS402.3 is worth 30% of the module marks and contains 
+two parts: Prototype  and a report . The prototype is  basically a working 
+software and the  report should  contain approaches, screenshots , testing 
+results, discussio n, and  most importantly  individual contribution  of the group 
+members . 
+ 
+1. Scenario  
+ 
+You are asked to create a rock-paper -scissor game1 which one can play with 
+a computer/smart phone. When the user says “Rock, Paper, Scissor, Shoot ” 
+and pose a gesture with fingers, your application should also pose a gesture. 
+The general rule is the rock beats scissor, scissor beats paper, paper beats 
+rock, and same gesture is treated as a tie.  
+ 
+ 
+ 
+I. Processing  
+Your program preferably written in Python language should take a photo of 
+the human hand gesture, remove background, and identify the gesture posed.  
+Note : While the program is running you need to show the progress of the 
+image processing. Such as greyscale,  thresholding,  binarization, etc.  
+$ python rps.py 
+ 
+1 https://en.wikipedia.org/wiki/Rock_paper_scissors  
+
+
+--- PAGE 3 ---
+
+ 
+CS402.3  Coursework 20 25/2026 3  
+II. Visualization  
+You are required to display the outlines, 
+gestures posed, and the gesture posed by 
+the application . The game should be easy to 
+play, attractive, error free, and professional. 
+You may be as creative as possible.  
+ 
+You may also extend your application to the 
+next level by Rock, Paper, Scissors, Lizard, 
+Spock2 an extension from the popular TV 
+series The Big Bang Theory3. 
+ 
+2.  Grouping  
+ 
+You are required to form groups of five/six  
+members  each playing different role in the 
+project,  but everybody is contributed to the 
+main concerns: image processing and 
+visualization.  The report should contain 
+individual contribution of each about a page  
+including technologies and coding.  Everyone 
+must play the game and add evidence.  
+You must also properly maintain a GitHub repository ; all commits must be 
+properly done with meaningful messages. Individuals should add self -tracking 
+summary to the individual contribution in the report.  
+ 
+3. Deliverables  
+I. Prototype  
+The prototype should be a working solution where one can input different 
+images  and get a summary . 
+ 
+II. Report  
+The report should  have a comprehensive discussion about what types of 
+image processing concepts were used, why they were used, screenshots of 
+all the image processing steps  at each step , testing results  for the given input 
+images , discussion about challenges faced, and individual contribution.  The 
+front page should contain group member names , roles,  indices, subject title , 
+and code.  
+ 
+2 https://bigbangtheory.fandom.com/wiki/Rock,_Paper,_Scissors,_Lizard,_Spock  
+3 https://www.imdb.com/title/tt0898266/  
+
+
+--- PAGE 4 ---
+
+ 
+CS402.3  Coursework 20 25/2026 4 You are required to prepare the report using standard references, figures, 
+tables, and equations. Each member must explain his/her contribution  
+with a minimum of one page; one can use illustrations for explanations, then 
+paragraphs need to be extended.   
+4. Assessment Criteria  
+Category  Criteria  LOs  Marks  
+Prototype  
+(Group)  • Quality of the program (coding styles, comments, 
+structure, naming conventions , testing results, etc.)  
+• Executable program  
+• Use of image processing libraries  and techniques  LO3 50% 
+Report  
+(Group)  
+ • Screenshots of the entire step by step process  
+• Discussion about all image processing related 
+technologies used  LO1 
+LO2 35% 
+Contribution 
+(Individual)  • Individual contribution  
+• GitHub history  LO2 15% 
+5. Submission Type  
+The coursework should be  uploaded to the NLEARN  as a two submissions  
+the prototype and the report : 
+• Prototype should be a zip file  
+• Report should be a MS Word file  
+ 

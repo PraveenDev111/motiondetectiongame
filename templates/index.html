@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Rock Paper Scissors Game</h1>
+        
+        <div class="game-area">
+            <div class="camera-feed">
+                <h2>Your Camera</h2>
+                <div class="feed-container">
+                    <img src="{{ url_for('video_feed') }}" alt="Camera Feed">
+                </div>
+                <p class="instructions">Say "Rock, Paper, Scissors, Shoot!" and make your gesture</p>
+                <button id="captureBtn" class="btn capture-btn">Capture Gesture</button>
+            </div>
+            
+            <div class="result-area">
+                <h2>Game Results</h2>
+                <div class="result-container">
+                    <div class="player-choice">
+                        <h3>Your Gesture</h3>
+                        <div id="userGesture" class="gesture-display">Waiting...</div>
+                    </div>
+                    <div class="computer-choice">
+                        <h3>Computer's Gesture</h3>
+                        <div id="computerGesture" class="gesture-display">Waiting...</div>
+                    </div>
+                </div>
+                <div class="winner-display">
+                    <h3>Result</h3>
+                    <div id="gameResult" class="result-text">Ready to play</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="processing-area">
+            <h2>Image Processing Steps</h2>
+            <div class="processing-container">
+                <img src="{{ url_for('processed_feed') }}" alt="Processing Steps">
+            </div>
+        </div>
+        
+        <div class="game-info">
+            <h2>How to Play</h2>
+            <ol>
+                <li>Position your hand in front of the camera</li>
+                <li>Say "Rock, Paper, Scissors, Shoot!" and make your gesture</li>
+                <li>Click the "Capture Gesture" button</li>
+                <li>See the results and try again!</li>
+            </ol>
+            
+            <div class="rules">
+                <h3>Game Rules</h3>
+                <ul>
+                    <li>Rock beats Scissors</li>
+                    <li>Scissors beats Paper</li>
+                    <li>Paper beats Rock</li>
+                    <li>Same gesture is a tie</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
