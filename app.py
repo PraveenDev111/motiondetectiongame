@@ -19,51 +19,28 @@ camera = None
 def initialize_camera():
     """Initialize the camera and return it if successful"""
     global camera
-    try:
-        # Close camera if it was previously opened but not working properly
+    if camera is None or not camera.isOpened():
+        # Release the camera if it was previously opened
         if camera is not None:
             camera.release()
             camera = None
-            time.sleep(0.5)
         
-        # Try to open the camera
-        camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # Use DirectShow on Windows
-        
-        # Set camera properties for better performance
-        camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-        camera.set(cv2.CAP_PROP_FPS, 30)
-        
-        # Wait for camera to initialize
-        time.sleep(1.5)
-        
-        # Check if camera opened successfully
-        if not camera.isOpened():
-            print("Error: Could not open camera with DirectShow.")
-            # Try fallback method
+        # Simple camera initialization - this worked previously
+        try:
             camera = cv2.VideoCapture(0)
-            time.sleep(1.5)
+            # Wait for camera to initialize
+            time.sleep(1)
             
             if not camera.isOpened():
-                print("Error: Could not open camera with fallback method.")
+                print("Error: Could not open camera.")
                 return None
-        
-        # Read a test frame to ensure camera is working
-        success, frame = camera.read()
-        if not success or frame is None:
-            print("Error: Camera opened but could not read frame.")
-            camera.release()
-            camera = None
+                
+            print("Camera initialized successfully.")
+            return camera
+        except Exception as e:
+            print(f"Error initializing camera: {e}")
             return None
-            
-        print("Camera initialized successfully.")
-        return camera
-    except Exception as e:
-        print(f"Error initializing camera: {e}")
-        if camera is not None:
-            camera.release()
-            camera = None
-        return None
+    return camera
 
 def generate_computer_gesture():
     """Generate a random gesture for the computer"""
