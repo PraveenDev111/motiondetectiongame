@@ -2,4 +2,9 @@ flask
 numpy
 opencv-python
 ultralytics
+torch
+torchvision
+kaggle
+matplotlib
+scikit-learn
 pillow

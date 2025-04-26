@@ -33,6 +33,32 @@ document.addEventListener('DOMContentLoaded', function() {
         'unknown': '<i class="fas fa-question-circle"></i>'
     };
     
+    // Function to get gesture icon
+    function getGestureIcon(gesture) {
+        return gestureIcons[gesture] || gestureIcons.unknown;
+    }
+    
+    // Function to refresh video feeds to prevent caching
+    function refreshVideoFeeds() {
+        // Refresh both video feeds by adding a timestamp to force reload
+        const timestamp = new Date().getTime();
+        
+        // Get the video feed elements
+        const videoFeed = document.getElementById('video_feed');
+        const processedFeed = document.getElementById('processed_feed');
+        
+        // Update the src attributes with a new timestamp
+        if (videoFeed) {
+            const currentSrc = videoFeed.src.split('?')[0]; // Remove any existing query params
+            videoFeed.src = `${currentSrc}?t=${timestamp}`;
+        }
+        
+        if (processedFeed) {
+            const currentSrc = processedFeed.src.split('?')[0]; // Remove any existing query params
+            processedFeed.src = `${currentSrc}?t=${timestamp}`;
+        }
+    }
+    
     // Function to update the UI with game results
     function updateGameUI(result) {
         // Update user gesture
@@ -45,8 +71,11 @@ document.addEventListener('DOMContentLoaded', function() {
         computerGesture.textContent = capitalizeFirstLetter(result.computer_gesture);
         
         // Update gesture icons
-        userGestureIcon.innerHTML = gestureIcons[result.user_gesture] || gestureIcons.unknown;
-        computerGestureIcon.innerHTML = gestureIcons[result.computer_gesture] || gestureIcons.unknown;
+        userGestureIcon.innerHTML = getGestureIcon(result.user_gesture);
+        computerGestureIcon.innerHTML = getGestureIcon(result.computer_gesture);
+        
+        // Refresh video feeds to ensure we're showing the latest frames
+        refreshVideoFeeds();
         
         // Add animation class
         userGestureIcon.classList.add('animate-pulse');
@@ -115,8 +144,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearInterval(countdownInterval);
                 gameResult.textContent = 'Analyzing gesture...';
                 
-                // Call the capture endpoint
-                fetch('/capture')
+                // Call the capture endpoint with a cache-busting parameter
+                fetch('/capture?t=' + new Date().getTime())
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
@@ -140,13 +169,23 @@ document.addEventListener('DOMContentLoaded', function() {
                             data.computer_gesture = 'rock';
                         }
                         
-                        // Update the UI with the results
-                        updateGameUI(data);
+                        // Clear previous results first
+                        userGesture.textContent = 'Processing...';
+                        computerGesture.textContent = 'Processing...';
+                        gameResult.textContent = 'Processing...';
+                        userGestureIcon.innerHTML = '';
+                        computerGestureIcon.innerHTML = '';
                         
-                        // Re-enable the button
-                        captureBtn.textContent = 'Capture Gesture';
-                        captureBtn.disabled = false;
-                        captureBtn.classList.remove('animate-pulse');
+                        // Add a small delay to ensure the UI updates properly
+                        setTimeout(() => {
+                            // Update the UI with the results
+                            updateGameUI(data);
+                            
+                            // Re-enable the button
+                            captureBtn.textContent = 'Capture Gesture';
+                            captureBtn.disabled = false;
+                            captureBtn.classList.remove('animate-pulse');
+                        }, 100);
                     })
                     .catch(error => {
                         console.error('Error capturing gesture:', error);

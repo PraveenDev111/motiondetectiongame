@@ -1,0 +1,91 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.env
+.venv
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Distribution / packaging
+.Python
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Logs
+logs/
+*.log
+
+# Local development settings
+.env
+.env.local
+
+# Database files
+*.sqlite3
+*.db
+
+# Project specific
+# Dataset directories
+kaggle_dataset/
+gesture_dataset/
+
+# Model files
+*.pt
+*.h5
+*.onnx
+*.pb
+
+# Debug images
+debug_*.jpg
+debug_*.png
+
+# Kaggle API credentials
+kaggle.json
+
+# Training history plots
+training_history.png
+
+# Large media files
+*.mp4
+*.mov
+*.avi
