@@ -8,15 +8,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const gameResult = document.getElementById('gameResult');
     const userGestureIcon = document.getElementById('userGestureIcon');
     const computerGestureIcon = document.getElementById('computerGestureIcon');
-    const classicModeBtn = document.getElementById('classicModeBtn');
-    const extendedModeBtn = document.getElementById('extendedModeBtn');
-    const classicRules = document.getElementById('classicRules');
-    const extendedRules = document.getElementById('extendedRules');
-    const lizardGuide = document.getElementById('lizardGuide');
-    const spockGuide = document.getElementById('spockGuide');
+    const pyTorchBtn = document.getElementById('pyTorchBtn');
+    const openCVBtn = document.getElementById('openCVBtn');
+    const processingText = document.getElementById('processingText');
     
-    // Game state
-    let gameMode = 'extended'; // 'classic' or 'extended'
+    // Processing option buttons
+    const grayscaleBtn = document.getElementById('grayscaleBtn');
+    const binaryBtn = document.getElementById('binaryBtn');
+    const adaptiveBtn = document.getElementById('adaptiveBtn');
+    const edgeDetectionBtn = document.getElementById('edgeDetectionBtn');
+    const skinDetectionBtn = document.getElementById('skinDetectionBtn');
+    const blurBtn = document.getElementById('blurBtn');
+    const contourBtn = document.getElementById('contourBtn');
+    const cannyBtn = document.getElementById('cannyBtn');
+    
+    // Sliders
+    const thresholdSlider = document.getElementById('thresholdSlider');
+    const thresholdValue = document.getElementById('thresholdValue');
+    const blurSlider = document.getElementById('blurSlider');
+    const blurValue = document.getElementById('blurValue');
+    
+    // Game and processing state
+    let detectionMethod = 'pytorch'; // 'pytorch' or 'opencv'
+    let processingMethod = 'skin'; // 'grayscale', 'binary', 'adaptive', 'edge', 'skin', 'blur', 'contour', 'canny'
+    let thresholdVal = 127;
+    let blurVal = 5;
     
     // Function to capitalize first letter
     function capitalizeFirstLetter(string) {
@@ -38,6 +54,166 @@ document.addEventListener('DOMContentLoaded', function() {
         return gestureIcons[gesture] || gestureIcons.unknown;
     }
     
+    // Function to update the active detection method
+    function updateDetectionMethod(method) {
+        detectionMethod = method;
+        
+        // Update UI
+        if (method === 'pytorch') {
+            pyTorchBtn.classList.add('active');
+            openCVBtn.classList.remove('active');
+        } else {
+            pyTorchBtn.classList.remove('active');
+            openCVBtn.classList.add('active');
+        }
+        
+        // Send method preference to server
+        fetch('/set_detection_method', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ method: method })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Detection method updated:', data);
+            // Refresh video feeds to show the change
+            refreshVideoFeeds();
+        })
+        .catch(error => {
+            console.error('Error updating detection method:', error);
+        });
+    }
+    
+    // Function to update the active processing method
+    function updateProcessingMethod(method) {
+        processingMethod = method;
+        
+        // Update UI
+        const allButtons = [
+            grayscaleBtn, 
+            binaryBtn, 
+            adaptiveBtn, 
+            edgeDetectionBtn, 
+            skinDetectionBtn, 
+            blurBtn, 
+            contourBtn, 
+            cannyBtn
+        ];
+        allButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Set active class
+        switch(method) {
+            case 'grayscale':
+                grayscaleBtn.classList.add('active');
+                processingText.textContent = 'Grayscale is active';
+                break;
+            case 'binary':
+                binaryBtn.classList.add('active');
+                processingText.textContent = 'Binary Threshold is active';
+                break;
+            case 'adaptive':
+                adaptiveBtn.classList.add('active');
+                processingText.textContent = 'Adaptive Threshold is active';
+                break;
+            case 'edge':
+                edgeDetectionBtn.classList.add('active');
+                processingText.textContent = 'Edge Detection is active';
+                break;
+            case 'skin':
+                skinDetectionBtn.classList.add('active');
+                processingText.textContent = 'Skin Detection is active';
+                break;
+            case 'blur':
+                blurBtn.classList.add('active');
+                processingText.textContent = 'Blur is active';
+                break;
+            case 'contour':
+                contourBtn.classList.add('active');
+                processingText.textContent = 'Contour Detection is active';
+                break;
+            case 'canny':
+                cannyBtn.classList.add('active');
+                processingText.textContent = 'Canny Edge Detection is active';
+                break;
+        }
+        
+        // Send processing preference to server
+        fetch('/set_processing_method', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                method: method,
+                threshold: thresholdVal,
+                blur: blurVal
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Processing method updated:', data);
+            // Refresh video feeds to show the change
+            refreshVideoFeeds();
+        })
+        .catch(error => {
+            console.error('Error updating processing method:', error);
+        });
+    }
+    
+    // Function to update threshold value
+    function updateThreshold(value) {
+        thresholdVal = parseInt(value);
+        thresholdValue.textContent = value;
+        
+        // Send to server
+        fetch('/set_processing_params', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                threshold: thresholdVal,
+                blur: blurVal
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Threshold updated:', data);
+            refreshVideoFeeds();
+        })
+        .catch(error => {
+            console.error('Error updating threshold:', error);
+        });
+    }
+    
+    // Function to update blur value
+    function updateBlur(value) {
+        blurVal = parseInt(value);
+        blurValue.textContent = value;
+        
+        // Send to server
+        fetch('/set_processing_params', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                threshold: thresholdVal,
+                blur: blurVal
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Blur updated:', data);
+            refreshVideoFeeds();
+        })
+        .catch(error => {
+            console.error('Error updating blur:', error);
+        });
+    }
+    
     // Function to refresh video feeds to prevent caching
     function refreshVideoFeeds() {
         // Refresh both video feeds by adding a timestamp to force reload
@@ -47,15 +223,35 @@ document.addEventListener('DOMContentLoaded', function() {
         const videoFeed = document.getElementById('video_feed');
         const processedFeed = document.getElementById('processed_feed');
         
-        // Update the src attributes with a new timestamp
+        // Update the src attributes with a new timestamp and active parameters
         if (videoFeed) {
-            const currentSrc = videoFeed.src.split('?')[0]; // Remove any existing query params
-            videoFeed.src = `${currentSrc}?t=${timestamp}`;
+            // Create a URL object to manipulate the URL parts safely
+            const currentSrc = new URL(videoFeed.src, window.location.origin);
+            // Remove existing timestamp parameter if present
+            currentSrc.searchParams.delete('t');
+            // Add new timestamp
+            currentSrc.searchParams.set('t', timestamp);
+            // Update the src
+            videoFeed.src = currentSrc.toString();
         }
         
         if (processedFeed) {
-            const currentSrc = processedFeed.src.split('?')[0]; // Remove any existing query params
-            processedFeed.src = `${currentSrc}?t=${timestamp}`;
+            // Create a URL object to manipulate the URL parts safely
+            const currentSrc = new URL(processedFeed.src, window.location.origin);
+            // Clear existing parameters that might cause conflicts
+            currentSrc.searchParams.delete('t');
+            currentSrc.searchParams.delete('method');
+            currentSrc.searchParams.delete('processing');
+            currentSrc.searchParams.delete('threshold');
+            currentSrc.searchParams.delete('blur');
+            // Add all current parameters
+            currentSrc.searchParams.set('t', timestamp);
+            currentSrc.searchParams.set('method', detectionMethod);
+            currentSrc.searchParams.set('processing', processingMethod);
+            currentSrc.searchParams.set('threshold', thresholdVal);
+            currentSrc.searchParams.set('blur', blurVal);
+            // Update the src
+            processedFeed.src = currentSrc.toString();
         }
     }
     
@@ -92,37 +288,67 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Change background color based on result
         if (result.result.includes('You win')) {
-            gameResult.parentElement.style.backgroundColor = 'var(--success-color)'; // Green for win
+            gameResult.parentElement.style.background = 'linear-gradient(to right, var(--success-color), #2ecc71)'; // Green gradient for win
         } else if (result.result.includes('Computer wins')) {
-            gameResult.parentElement.style.backgroundColor = 'var(--secondary-color)'; // Red for loss
+            gameResult.parentElement.style.background = 'linear-gradient(to right, var(--secondary-color), var(--secondary-dark))'; // Red gradient for loss
         } else if (result.result.includes('Tie')) {
-            gameResult.parentElement.style.backgroundColor = 'var(--warning-color)'; // Orange for tie
+            gameResult.parentElement.style.background = 'linear-gradient(to right, var(--warning-color), #e67e22)'; // Orange gradient for tie
         } else {
             // Error or other cases
-            gameResult.parentElement.style.backgroundColor = '#7f8c8d'; // Gray for error
+            gameResult.parentElement.style.background = 'linear-gradient(to right, #7f8c8d, #95a5a6)'; // Gray gradient for error
         }
     }
     
-    // We're only using extended mode now
-    gameMode = 'extended';
+    // Event listeners for detection method toggle
+    pyTorchBtn.addEventListener('click', () => {
+        updateDetectionMethod('pytorch');
+    });
     
-    // Hide classic mode UI elements
-    if (classicModeBtn && extendedModeBtn) {
-        classicModeBtn.style.display = 'none';
-        extendedModeBtn.style.display = 'none';
-    }
+    openCVBtn.addEventListener('click', () => {
+        updateDetectionMethod('opencv');
+    });
     
-    // Show only extended rules
-    if (classicRules && extendedRules) {
-        classicRules.style.display = 'none';
-        extendedRules.style.display = 'block';
-    }
+    // Event listeners for processing method toggle
+    grayscaleBtn.addEventListener('click', () => {
+        updateProcessingMethod('grayscale');
+    });
     
-    // Show all gesture guides
-    if (lizardGuide && spockGuide) {
-        lizardGuide.style.display = 'block';
-        spockGuide.style.display = 'block';
-    }
+    binaryBtn.addEventListener('click', () => {
+        updateProcessingMethod('binary');
+    });
+    
+    adaptiveBtn.addEventListener('click', () => {
+        updateProcessingMethod('adaptive');
+    });
+    
+    edgeDetectionBtn.addEventListener('click', () => {
+        updateProcessingMethod('edge');
+    });
+    
+    skinDetectionBtn.addEventListener('click', () => {
+        updateProcessingMethod('skin');
+    });
+    
+    blurBtn.addEventListener('click', () => {
+        updateProcessingMethod('blur');
+    });
+    
+    contourBtn.addEventListener('click', () => {
+        updateProcessingMethod('contour');
+    });
+    
+    cannyBtn.addEventListener('click', () => {
+        updateProcessingMethod('canny');
+    });
+    
+    // Event listeners for sliders
+    thresholdSlider.addEventListener('input', () => {
+        updateThreshold(thresholdSlider.value);
+    });
+    
+    blurSlider.addEventListener('input', () => {
+        updateBlur(blurSlider.value);
+    });
     
     // Event listener for capture button
     captureBtn.addEventListener('click', function() {
@@ -134,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Visual countdown
         let count = 3;
         gameResult.textContent = `Capturing in ${count}...`;
-        gameResult.parentElement.style.backgroundColor = 'var(--primary-color)';
+        gameResult.parentElement.style.background = 'linear-gradient(to right, var(--primary-color), var(--primary-dark))';
         
         const countdownInterval = setInterval(() => {
             count--;
@@ -144,8 +370,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearInterval(countdownInterval);
                 gameResult.textContent = 'Analyzing gesture...';
                 
-                // Call the capture endpoint with a cache-busting parameter
-                fetch('/capture?t=' + new Date().getTime())
+                // Call the capture endpoint with additional parameters
+                fetch(`/capture?t=${new Date().getTime()}&method=${detectionMethod}&processing=${processingMethod}&threshold=${thresholdVal}&blur=${blurVal}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
@@ -182,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             updateGameUI(data);
                             
                             // Re-enable the button
-                            captureBtn.textContent = 'Capture Gesture';
+                            captureBtn.innerHTML = '<i class="fas fa-hand-pointer"></i> Capture Gesture';
                             captureBtn.disabled = false;
                             captureBtn.classList.remove('animate-pulse');
                         }, 100);
@@ -197,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                         
                         // Re-enable the button
-                        captureBtn.textContent = 'Capture Gesture';
+                        captureBtn.innerHTML = '<i class="fas fa-hand-pointer"></i> Capture Gesture';
                         captureBtn.disabled = false;
                         captureBtn.classList.remove('animate-pulse');
                     });
@@ -223,4 +449,8 @@ document.addEventListener('DOMContentLoaded', function() {
             example.appendChild(iconElement);
         }
     });
+    
+    // Initialize with default settings
+    updateDetectionMethod('pytorch');
+    updateProcessingMethod('skin');
 });

@@ -5,25 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rock Paper Scissors Lizard Spock Game</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+    <div class="background-animation">
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+    </div>
+    
     <div class="container">
-        <h1>Rock Paper Scissors Lizard Spock</h1>
+        <div class="header-section">
+            <h1>Rock Paper Scissors Lizard Spock</h1>
+            <p class="tagline">Advanced Computer Vision Game</p>
+        </div>
+        
+        <!-- Model Selection Toggle -->
+        <div class="detection-toggle">
+            <button id="pyTorchBtn" class="detection-btn active"><i class="fas fa-brain"></i> PyTorch AI</button>
+            <button id="openCVBtn" class="detection-btn"><i class="fas fa-eye"></i> OpenCV</button>
+        </div>
         
         <div class="game-area">
             <div class="camera-feed">
-                <h2>Your Camera</h2>
+                <h2><i class="fas fa-camera"></i> Your Camera</h2>
                 <div class="feed-container">
-                    <img src="{{ url_for('video_feed') }}" alt="Camera Feed">
+                    <img src="{{ url_for('video_feed') }}" alt="Camera Feed" id="video_feed">
                 </div>
-                <p class="instructions">Say "Rock, Paper, Scissors, Lizard, Spock, Shoot!" and make your gesture</p>
-                <button id="captureBtn" class="btn capture-btn">Capture Gesture</button>
+                <p class="instructions"><i class="fas fa-info-circle"></i> Say "Rock, Paper, Scissors, Lizard, Spock, Shoot!" and make your gesture</p>
+                <button id="captureBtn" class="btn capture-btn"><i class="fas fa-hand-pointer"></i> Capture Gesture</button>
             </div>
             
             <div class="result-area">
-                <h2>Game Results</h2>
+                <h2><i class="fas fa-gamepad"></i> Game Results</h2>
                 <div class="result-container">
                     <div class="player-choice">
                         <h3>Your Gesture</h3>
@@ -44,23 +61,49 @@
         </div>
         
         <div class="processing-area">
-            <h2>Image Processing Steps</h2>
+            <h2><i class="fas fa-sliders-h"></i> Image Processing</h2>
+            
+            <!-- Processing options -->
+            <div class="processing-options">
+                <button id="grayscaleBtn" class="processing-btn"><i class="fas fa-adjust fa-flip-horizontal"></i> Grayscale</button>
+                <button id="binaryBtn" class="processing-btn"><i class="fas fa-toggle-on"></i> Binary</button>
+                <button id="adaptiveBtn" class="processing-btn"><i class="fas fa-th"></i> Adaptive</button>
+                <button id="edgeDetectionBtn" class="processing-btn"><i class="fas fa-border-style"></i> Edge</button>
+                <button id="skinDetectionBtn" class="processing-btn active"><i class="fas fa-hand-paper"></i> Skin</button>
+                <button id="blurBtn" class="processing-btn"><i class="fas fa-water"></i> Blur</button>
+                <button id="contourBtn" class="processing-btn"><i class="fas fa-draw-polygon"></i> Contour</button>
+                <button id="cannyBtn" class="processing-btn"><i class="fas fa-bezier-curve"></i> Canny</button>
+            </div>
+            
             <div class="processing-container">
-                <img src="{{ url_for('processed_feed') }}" alt="Processing Steps">
+                <img src="{{ url_for('processed_feed') }}" alt="Processing Steps" id="processed_feed">
+                <div id="processingText" class="text-overlay">Skin Detection is active</div>
+            </div>
+            
+            <div class="processing-controls">
+                <div class="slider-control">
+                    <label for="thresholdSlider">Threshold: <span id="thresholdValue">127</span></label>
+                    <input type="range" min="0" max="255" value="127" class="slider" id="thresholdSlider">
+                </div>
+                <div class="slider-control">
+                    <label for="blurSlider">Blur: <span id="blurValue">5</span></label>
+                    <input type="range" min="1" max="25" value="5" step="2" class="slider" id="blurSlider">
+                </div>
             </div>
         </div>
         
         <div class="game-info">
-            <h2>How to Play</h2>
+            <h2><i class="fas fa-question-circle"></i> How to Play</h2>
             <ol>
+                <li>Choose detection method: <b>PyTorch</b> (AI model) or <b>OpenCV</b> (computer vision)</li>
                 <li>Position your hand in front of the camera</li>
                 <li>Make one of the gestures shown below</li>
                 <li>Click the "Capture Gesture" button (or press Spacebar)</li>
-                <li>See the results and try again!</li>
+                <li>Try different image processing methods to improve detection</li>
             </ol>
             
             <div class="gesture-guide">
-                <h3>Gesture Guide</h3>
+                <h3><i class="fas fa-hand-paper"></i> Gesture Guide</h3>
                 <div class="gesture-examples">
                     <div class="gesture-example">
                         <div class="gesture-name">Rock</div>
@@ -86,7 +129,7 @@
             </div>
             
             <div class="rules">
-                <h3>Game Rules</h3>
+                <h3><i class="fas fa-scroll"></i> Game Rules</h3>
                 <ul>
                     <li>Rock crushes Scissors & crushes Lizard</li>
                     <li>Paper covers Rock & disproves Spock</li>
@@ -99,7 +142,14 @@
         </div>
         
         <footer>
-            <p>Created for CS402.3 Coursework 2025/2026</p>
+            <p class="copyright-text">Created for CS402.3 Coursework 2025/2026</p>
+            <div class="tech-badges">
+                <span class="badge"><i class="fab fa-python"></i> Python</span>
+                <span class="badge"><i class="fab fa-js"></i> JavaScript</span>
+                <span class="badge"><i class="fas fa-flask"></i> Flask</span>
+                <span class="badge"><i class="fas fa-brain"></i> PyTorch</span>
+                <span class="badge"><i class="fas fa-eye"></i> OpenCV</span>
+            </div>
         </footer>
     </div>
     
