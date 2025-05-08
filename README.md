@@ -25,8 +25,8 @@ All dependencies are listed in the `requirements.txt` file.
 
 1. Clone the repository:
 ```
-git clone <repository-url>
-cd <repository-directory>
+git clone https://github.com/PraveenDev111/motiondetectiongame.git
+cd motiondetectiongame
 ```
 
 2. Install the required dependencies:
